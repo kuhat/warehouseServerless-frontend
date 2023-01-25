@@ -79,17 +79,19 @@ function App() {
 
     useEffect(() => {
         console.log("enrolled students: ", students)
-        // setGrades([])
         console.log("init grades: ", grades)
+        const grd: Grade[] = []
         if (students.length !== 0) {
+            setGrades([])
             while (students.length !== 0) {
                 const studentId = students.pop()
                 fetchGrade(studentId).then(r => {
-                    grades.push(r)
-                    // console.log(grades)
-                    setGrades(grades)
+                    grd.push(r)
                 })
             }
+            setTimeout(()=> {
+                setGrades(grd)
+            }, 1000)
         }
     }, [students])
 
