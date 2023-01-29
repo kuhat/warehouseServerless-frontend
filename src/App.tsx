@@ -15,6 +15,7 @@ function App() {
     const [classList, setClassList] = useState<IUniversityClass[]>([]);
     const [students, setStudents] = useState<string[]>([]);
     const [grades, setGrades] = useState<Grade[]>([])
+    const [weights, setWeights] = useState([])
 
     /**
      * This is JUST an example of how you might fetch some data(with a different API).
@@ -63,8 +64,20 @@ function App() {
 
     const fetchGrade = async (studentId: string | undefined) => {
         console.log("fetching students of class: " + currClassId)
-        const res = await fetch(BASE_API_URL + "/student/listGrades/" + studentId + "/" + currClassId + "/"
+        const gradeRes = await fetch(BASE_API_URL + "/student/listGrades/" + studentId + "/" + currClassId + "/"
             + "?buid=" + MY_BU_ID, {
+            method: "GET",
+            headers: {
+                'x-functions-key': TOKEN
+            }
+        })
+        const gradeJson = await gradeRes.json()
+        // console.log(gradeJson)
+        return await gradeJson
+    }
+
+    const fetchWeights = async (classID: string) => {
+        const res = await fetch(BASE_API_URL + "/class/listAssignments/" + classID + "?buid=" + MY_BU_ID, {
             method: "GET",
             headers: {
                 'x-functions-key': TOKEN
@@ -97,6 +110,7 @@ function App() {
 
     useEffect(() => {
         fetchStudents(currClassId).then(r => setStudents(r))
+        fetchWeights(currClassId).then(r => setWeights(r))
     }, [currClassId])
 
     const handleSelectChange = (event: SelectChangeEvent) => {
@@ -159,6 +173,7 @@ function App() {
                         <GradeTable
                             grades={grades}
                             className={curClassName}
+                            weights={weights}
                         />
                     </div>
                 </Grid>
