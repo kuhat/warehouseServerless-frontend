@@ -15,7 +15,7 @@ import TableHead from '@mui/material/TableHead';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import {useEffect, useState} from "react";
-import {Grade, gradeColumn, tableHeader} from "../types/api_types";
+import {Grade, gradeColumn, tableHeader, weight} from "../types/api_types";
 
 /**
  * This is the component where you should write the code for displaying the
@@ -29,11 +29,14 @@ export const GradeTable = (props: any) => {
     const [rowsPerPage, setRowsPerPage] = React.useState(10);
     const [gradeData, setGradeData] = useState<Grade[]>([]);
     const [className, setClassName] = useState<string>("");
+    const [weights, setWeights] = useState<weight[]>([])
 
     useEffect(() => {
         setGradeData(props.grades)
         setClassName(props.className)
+        setWeights(props.weights)
         // console.log("grades data in table: ", gradeData)
+        // console.log("weights: ", weights)
         // console.log("class Name in table", className)
     }, [props])
 
@@ -44,13 +47,21 @@ export const GradeTable = (props: any) => {
         grades: any,
     ): tableHeader {
         let grade: number = 0;
+        let total = 0;
         const item = grades[0]
+        let ratio = 1
+        weights.map((item)=> {
+            total += item.weight
+        })
         for (var k in item) {
-            grade += Number(item[k])
+            weights.map((item)=> {
+                if (item.assignmentId === k) ratio = item.weight / total
+            })
+            grade += Number(item[k]) * ratio
         }
         return {
             studentId: studentId, studentName: name, classId: classId, className: className,
-            semester: "fall2022", finalGrade: grade
+            semester: "fall2022", finalGrade: grade.toFixed(3)
         }
     }
 

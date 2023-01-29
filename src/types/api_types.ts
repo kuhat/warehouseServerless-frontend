@@ -31,7 +31,7 @@ export interface tableHeader {
   classId: string;
   className: string;
   semester: string;
-  finalGrade: number;
+  finalGrade: string;
 }
 
 export interface gradeColumn {
@@ -40,4 +40,11 @@ export interface gradeColumn {
   minWidth?: number;
   align?: 'right';
   format?: (value: number) => string;
+}
+
+export interface weight {
+  assignmentId: string;
+  classId: string;
+  data: Date;
+  weight: number;
 }
