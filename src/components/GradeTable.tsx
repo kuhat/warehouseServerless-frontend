@@ -47,21 +47,17 @@ export const GradeTable = (props: any) => {
         grades: any,
     ): tableHeader {
         let grade: number = 0;
-        let total = 0;
         const item = grades[0]
         let ratio = 1
-        weights.map((item)=> {
-            total += item.weight
-        })
         for (var k in item) {
             weights.map((item)=> {
-                if (item.assignmentId === k) ratio = item.weight / total
+                if (item.assignmentId === k) ratio = item.weight * 0.01
             })
             grade += Number(item[k]) * ratio
         }
         return {
             studentId: studentId, studentName: name, classId: classId, className: className,
-            semester: "fall2022", finalGrade: grade.toFixed(3)
+            semester: "fall2022", finalGrade: grade.toFixed(1)
         }
     }
 
