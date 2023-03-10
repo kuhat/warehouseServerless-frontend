@@ -15,7 +15,7 @@ import TableHead from '@mui/material/TableHead';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import {useEffect, useState} from "react";
-import {Grade, gradeColumn, tableHeader, weight} from "../types/api_types";
+import {Grade, gradeColumn, item, itemColumn, tableHeader, talbeHead, weight} from "../types/api_types";
 
 /**
  * This is the component where you should write the code for displaying the
@@ -27,6 +27,8 @@ import {Grade, gradeColumn, tableHeader, weight} from "../types/api_types";
 export const GradeTable = (props: any) => {
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(10);
+    const [items, setItems] = useState<item[]>([])
+    const [itemData, SetItemData] = useState<item[]>([])
     const [gradeData, setGradeData] = useState<Grade[]>([]);
     const [className, setClassName] = useState<string>("");
     const [weights, setWeights] = useState<weight[]>([])
@@ -35,10 +37,41 @@ export const GradeTable = (props: any) => {
         setGradeData(props.grades)
         setClassName(props.className)
         setWeights(props.weights)
-        // console.log("grades data in table: ", gradeData)
-        // console.log("weights: ", weights)
-        // console.log("class Name in table", className)
+        setItems(props.items)
+        console.log(items)
     }, [props])
+
+    function createItemData(
+        ShipmentID: string,
+        BoxesRcvd: string,
+        ShippingPO: string,
+        WarehouseID: string,
+        Date: string
+    ) : talbeHead {
+        return {ShipmentID: ShipmentID,
+            BoxesRcvd: BoxesRcvd,
+            ShippingPO: ShippingPO,
+            WarehouseID: WarehouseID,
+            Date: Date}
+    }
+
+    const getItemRows = () => {
+        let data: talbeHead[] = []
+        items.map((item) => {
+            data.push(createItemData(item.ShipmentID, item.BoxesRcvd, item.ShippingPO, item.WarehouseID, item.Date))
+        })
+        return data
+    }
+
+    const itemRows = getItemRows()
+
+    const itemColumns: readonly itemColumn[] = [
+        {id: 'ShipmentID', label: 'Shipment ID', minWidth: 170},
+        {id: 'WarehouseID', label: 'Warehouse ID', minWidth: 170},
+        {id: 'ShippingPO', label: 'Shipping PO', minWidth: 170, align: 'right'},
+        {id: 'BoxesRcvd', label: 'Boxes Received', minWidth: 170, align: 'right'},
+        {id: 'Date', label: 'Date', minWidth: 170, align: 'right'},
+    ]
 
     function createGradeData(
         studentId: string,
@@ -95,7 +128,7 @@ export const GradeTable = (props: any) => {
                 <Table stickyHeader aria-label="sticky table">
                     <TableHead>
                         <TableRow>
-                            {gradeColumns.map((column) => (
+                            {itemColumns.map((column) => (
                                 <TableCell
                                     key={column.id}
                                     align={column.align}
@@ -107,12 +140,12 @@ export const GradeTable = (props: any) => {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {gradeRows
+                        {itemRows
                             .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                             .map((row) => {
                                 return (
-                                    <TableRow hover role="checkbox" tabIndex={-1} key={row.studentId}>
-                                        {gradeColumns.map((column) => {
+                                    <TableRow hover role="checkbox" tabIndex={-1} key={row.ShipmentID}>
+                                        {itemColumns.map((column) => {
                                             const value = row[column.id];
                                             return (
                                                 <TableCell key={column.id} align={column.align}>
@@ -131,7 +164,7 @@ export const GradeTable = (props: any) => {
             <TablePagination
                 rowsPerPageOptions={[10, 25, 100]}
                 component="div"
-                count={gradeRows.length}
+                count={itemRows.length}
                 rowsPerPage={rowsPerPage}
                 page={page}
                 onPageChange={handleChangePage}

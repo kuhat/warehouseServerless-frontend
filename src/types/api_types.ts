@@ -8,6 +8,31 @@
 /**
  * This represents a class as returned by the API
  */
+
+export interface item {
+  Date: string;
+  WarehouseID: string;
+  ShipmentID: string;
+  ShippingPO: string;
+  BoxesRcvd: string;
+}
+
+export interface talbeHead{
+  Date: string;
+  WarehouseID: string;
+  ShipmentID: string;
+  ShippingPO: string;
+  BoxesRcvd: string;
+}
+
+export interface itemColumn {
+  id: 'ShipmentID' | 'WarehouseID' | 'Date' | 'ShippingPO' | 'BoxesRcvd';
+  label: string;
+  minWidth?: number;
+  align?: 'right';
+  format?: (value: number) => string;
+}
+
 export interface IUniversityClass {
   classId: string;
   title: string;

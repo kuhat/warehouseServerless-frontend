@@ -4,9 +4,9 @@
  * Fill in the blank for each one
  */
 export const MY_BU_ID = "U36389876";
-export const BASE_API_URL = "https://dscs519-assessment.azurewebsites.net/api";
+export const BASE_API_URL = "https://kx473b4cs0.execute-api.us-east-1.amazonaws.com/Prod";
 // You can get this from Piazza
-export const TOKEN = "fKZTwhwT1DV64q_JzG6sYoShfq-cJbPwBgjIMOImYSTiAzFuv4-H5g==";
+export const TOKEN = "vyEfYYDK9Sx4MGi7";
 // This is a helper function to generate the headers with the x-functions-key attached
 export const GET_DEFAULT_HEADERS = () => {
   var headers = new Headers();

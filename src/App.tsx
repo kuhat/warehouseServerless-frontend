@@ -5,17 +5,17 @@ import {MenuItem, Select, SelectChangeEvent, Typography} from "@mui/material";
  * You will find globals from this file useful!
  */
 import {BASE_API_URL, MY_BU_ID, TOKEN} from "./globals";
-import {Grade, IUniversityClass} from "./types/api_types";
+import {Grade, item} from "./types/api_types";
 import {GradeTable} from "./components/GradeTable";
 
 function App() {
     // You will need to use more of these!
-    const [currClassId, setCurrClassId] = useState<string>("");
     const [curClassName, setCurClassName] = useState<string>("");
-    const [classList, setClassList] = useState<IUniversityClass[]>([]);
-    const [students, setStudents] = useState<string[]>([]);
     const [grades, setGrades] = useState<Grade[]>([])
     const [weights, setWeights] = useState([])
+    const [curShipperID, setCurShipperID] = useState<string>("")
+    const [shipperList, setShipperList] = useState<string[]>([])
+    const [itemDataList, setItemDataList] = useState<item[]>([])
 
     /**
      * This is JUST an example of how you might fetch some data(with a different API).
@@ -31,6 +31,31 @@ function App() {
      * You will also need to explore the use of async/await.
      *
      */
+    const fetchItemsData = async (id: string) => {
+        const res = await fetch("https://kx473b4cs0.execute-api.us-east-1.amazonaws.com/Prod/items" + "?id=" + id, {
+            method: "GET",
+            headers: {
+                "authorizationToken": TOKEN
+            }
+
+        })
+        const json = await res.json();
+        console.log(json)
+        return json
+    }
+
+    const fetchShipperInfo = async () => {
+        const res = await fetch(BASE_API_URL + "/shippers", {
+            method: "GET",
+            headers: {
+                "authorizationToken": TOKEN,
+            }
+        })
+        const json = await res.json();
+        console.log(json);
+        return json
+    }
+
     const fetchSomeData = async () => {
         const res = await fetch("https://cat-fact.herokuapp.com/facts/", {
             method: "GET",
@@ -39,100 +64,28 @@ function App() {
         console.log(json);
     };
 
-    const fetchClasses = async () => {
-        const res = await fetch(BASE_API_URL + "/class/listBySemester/fall2022/?buid=" + MY_BU_ID, {
-            method: "GET",
-            headers: {
-                'x-functions-key': TOKEN
-            }
-        });
-        return await res.json()
-    }
-
-    const fetchStudents = async (classID: String) => {
-        console.log("fetching class: " + classID)
-        console.log("current class Name: " + curClassName)
-
-        const res = await fetch(BASE_API_URL + "/class/listStudents/" + classID + "?buid=" + MY_BU_ID, {
-            method: "GET",
-            headers: {
-                'x-functions-key': TOKEN
-            }
-        })
-        return await res.json()
-    }
-
-    const fetchGrade = async (studentId: string | undefined) => {
-        console.log("fetching students of class: " + currClassId)
-        const gradeRes = await fetch(BASE_API_URL + "/student/listGrades/" + studentId + "/" + currClassId + "/"
-            + "?buid=" + MY_BU_ID, {
-            method: "GET",
-            headers: {
-                'x-functions-key': TOKEN
-            }
-        })
-        const gradeJson = await gradeRes.json()
-        // console.log(gradeJson)
-        return await gradeJson
-    }
-
-    const fetchWeights = async (classID: string) => {
-        const res = await fetch(BASE_API_URL + "/class/listAssignments/" + classID + "?buid=" + MY_BU_ID, {
-            method: "GET",
-            headers: {
-                'x-functions-key': TOKEN
-            }
-        })
-        return await res.json()
-    }
-
     useEffect(() => {
-        fetchClasses().then(r => setClassList(r))
+        fetchShipperInfo().then(r => {
+            console.log(r)
+            setShipperList(r.data)
+        })
     }, [])
 
-    useEffect(() => {
-        console.log("enrolled students: ", students)
-        console.log("init grades: ", grades)
-        const grd: Grade[] = []
-        if (students.length !== 0) {
-            setGrades([])
-            while (students.length !== 0) {
-                const studentId = students.pop()
-                fetchGrade(studentId).then(r => {
-                    grd.push(r)
-                })
-            }
-            setTimeout(()=> {
-                setGrades(grd)
-            }, 1000)
-        }
-    }, [students])
-
-    useEffect(() => {
-        fetchStudents(currClassId).then(r => setStudents(r))
-        fetchWeights(currClassId).then(r => setWeights(r))
-    }, [currClassId])
-
-    const handleSelectChange = (event: SelectChangeEvent) => {
-        console.log("Selected course: ", event.target)
-        const classId = event.target.value  // get selected class ID
-        const cName = getClassName(classId)
-        console.log("Selected cName: " + cName)
-        if (grades.length > 100) setGrades([])
-        setCurClassName(cName)
-        setCurrClassId(classId)  // set the current class ID
-        // fetchStudents(classId).then(r => setStudents(r))  // fetch students id and set students ID
+    const handleSelectChange = async (event: SelectChangeEvent) => {
+        console.log("Selected shipper: ", event.target)
+        const shipperId = event.target.value  // get selected class ID
+        const res = await fetchItemsData(shipperId)
+        setItemDataList(res)
+        // setCurShipperID(shipperId);
     }
 
-    const getClassName = (classId: string) => {
-        let cname: string = ""
-        classList.map((item) => {
-            if (item.classId == classId) {
-                cname = item.title
-            }
-        })
-        return cname
-    }
+    // useEffect(() => {
+    //     fetchItemsData(curShipperID).then(r => {
+    //         console.log(r)
+    //         setItemDataList(r)
+    //     })
+    // }, [curShipperID])
+
 
     return (
         <div style={{width: "100vw", height: "100vh"}}>
@@ -144,7 +97,7 @@ function App() {
                 </Grid>
                 <Grid xs={12} md={4}>
                     <Typography variant="h4" gutterBottom>
-                        Select a class
+                        Select a shipper according to ID
                     </Typography>
                     <div style={{width: "100%"}}>
                         <Select
@@ -153,12 +106,12 @@ function App() {
                             onChange={handleSelectChange}
                         >
                             {/* You'll need to place some code here to generate the list of items in the selection */}
-                            {classList.map((ele) => {
+                            {shipperList.map((ele) => {
                                 return (
                                     <MenuItem
-                                        value={ele.classId}
+                                        value={ele}
                                     >
-                                        {ele.title}
+                                        {ele}
                                     </MenuItem>
                                 )
                             })}
@@ -171,6 +124,7 @@ function App() {
                     </Typography>
                     <div>
                         <GradeTable
+                            items={itemDataList}
                             grades={grades}
                             className={curClassName}
                             weights={weights}
