@@ -92,7 +92,7 @@ function App() {
             <Grid container spacing={2} style={{padding: "1rem"}}>
                 <Grid xs={12} container alignItems="center" justifyContent="center">
                     <Typography variant="h2" gutterBottom>
-                        Spark Assessment
+                        Spark Assessment Info Page
                     </Typography>
                 </Grid>
                 <Grid xs={12} md={4}>
@@ -120,7 +120,7 @@ function App() {
                 </Grid>
                 <Grid xs={12} md={8}>
                     <Typography variant="h4" gutterBottom>
-                        Final Grades
+                        Goods Info
                     </Typography>
                     <div>
                         <GradeTable
